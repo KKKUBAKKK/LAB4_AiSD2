@@ -1,6 +1,7 @@
 using System;
 using ASD.Graphs;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ASD
 {
@@ -79,8 +80,110 @@ namespace ASD
         {
             // TODO
             
+            // TO NIE DZIALA, ALE MOZE DALOBY SIE POPRAWIC (ROBIENIE SCIEZKI W CZASIE SZUAKANIA)
+            //     bool possible = false;
+            //     List<int> finalPath = new List<int>();
+            //     foreach (var start in starts)
+            //     {
+            //         List<int> path = new List<int>();
+            //         Stack<(int vertex, int prev)> stack = new Stack<(int vertex, int prev)>();
+            //         
+            //         stack.Insert((start, -1));
+            //         while (stack.Count != 0)
+            //         {
+            //             var vert = stack.Extract();
+            //             foreach (var edge in graph.OutEdges(vert.vertex))
+            //             {
+            //                 if (vert.prev == edge.Weight)
+            //                     stack.Insert((edge.To, vert.vertex));
+            //             }
+            //
+            //             if (path.Count > 0 && vert.prev != path[path.Count - 1])
+            //             {
+            //                 // znajduje pierewsze wystapienie a ja chce ostatnie/niewiadomo jakie???
+            //                 int ind = path.FindIndex((int i) =>
+            //                 {
+            //                     // if (i != 0 && path[i - 1] == graph.GetEdgeWeight(path[i], vert.prev))
+            //                     //     return false;
+            //                     return i == vert.prev;
+            //                 });
+            //                 path.RemoveRange(ind + 1, path.Count  - ind - 1);
+            //             }
+            //             
+            //             path.Add(vert.vertex);
+            //
+            //             if (goals.Contains(path[path.Count - 1]))
+            //             {
+            //                 possible = true;
+            //                 finalPath = path;
+            //                 break;
+            //             }
+            //         }
+            //
+            //         if (possible)
+            //             break;
+            //     }
+            //     
+            //     if (!possible)
+            //         return (false, null);
+            //
+            //     return (true, finalPath.ToArray());
+
+            // WERSJA Z ODTWARZANIEM SCIEZKI
+            bool possible = false;
+            int prev = -1;
+            List<int> visited = new List<int>();
+            List<int> path = new List<int>();
             
-            return (false, null);
+            foreach (var start in starts)
+            {
+                visited = new List<int>();
+                Stack<(int vertex, int prev)> stack = new Stack<(int vertex, int prev)>();
+
+                stack.Insert((start, -1));
+                while (stack.Count != 0)
+                {
+                    var vert = stack.Extract();
+                    foreach (var edge in graph.OutEdges(vert.vertex))
+                    {
+                        if (vert.prev == edge.Weight)
+                            stack.Insert((edge.To, vert.vertex));
+                    }
+
+                    if (!visited.Contains(vert.vertex))
+                        visited.Add(vert.vertex);
+
+                    if (goals.Contains(visited[visited.Count - 1]))
+                    {
+                        prev = vert.prev;
+                        possible = true;
+                        break;
+                    }
+
+                    // Czy potrzebne???
+                    if (visited.Count == graph.VertexCount)
+                        break;
+                }
+
+                if (possible)
+                    break;
+            }
+
+            if (!possible)
+                return (false, null);
+
+            var curr = visited[visited.Count - 1];
+            while (prev != -1)
+            {
+                var pprev= graph.GetEdgeWeight(prev, curr);
+                path.Add(curr);
+                curr = prev;
+                prev = pprev;
+            }
+            path.Add(curr);
+            path.Reverse();
+            
+            return (true, path.ToArray());
         }
     }
 }
