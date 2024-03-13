@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="Graphs">
+        <HintPath>..\..\..\Library\Mobile Documents\com~apple~CloudDocs\Studia\SEM4\AiSD2\LAB\Graphs.dll</HintPath>
+      </Reference>
+      <Reference Include="TestSet">
+        <HintPath>..\..\..\Library\Mobile Documents\com~apple~CloudDocs\Studia\SEM4\AiSD2\LAB\TestSet.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>
