@@ -22,7 +22,42 @@ namespace ASD
         public (bool result, int[] route) Lab04_FindRoute(DiGraph<int> g, int start_v, int end_v, int day, int days_number)
         {
             // TODO
-            return (false, null);
+            System.Collections.Generic.List<int> route = new List<int>();
+            Stack<(int city, int day, int parents)> stack = new Stack<(int, int, int)>();
+            
+            stack.Insert((start_v, day, 0));
+            while (stack.Count != 0)
+            {
+                var stop = stack.Extract();
+
+                if (route.Count > stop.parents)
+                    route.RemoveRange(stop.parents - 1, route.Count - stop.parents);
+                
+                route.Add(stop.city);
+                if (route[^1] == end_v)
+                    break;
+                
+                foreach (var edge in g.OutEdges(stop.city))
+                {
+                    if ((stop.parents == 0 && edge.Weight <= stop.day) || (stop.parents != 0 && edge.Weight > stop.day))
+                        stack.Insert((edge.To, edge.Weight, stop.parents + 1));
+                }
+            }
+
+            if (route[^1] != end_v)
+                return (false, null);
+
+            // List<int> route = new List<int>();
+            // var city = stops[^1].city;
+            // var prev = stops[^1].prevCity;
+            // route.Add(city);
+            // while (prev != -1)
+            // {
+            //     
+            // }
+            // route.Reverse();
+            
+            return (true, route.ToArray());
         }
 
         /// <summary>
