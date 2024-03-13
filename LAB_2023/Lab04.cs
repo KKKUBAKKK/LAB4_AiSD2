@@ -15,24 +15,48 @@ namespace ASD
         public int[] Lab04Stage1(DiGraph<int> graph, int start)
         {
             // TODO
+            // List<int> visited = new List<int>();
+            // Queue<(int vertex, int prev)> queue = new Queue<(int vertix, int prev)>();
+            //
+            // queue.Enqueue((start, -1));
+            // while (queue.Count != 0)
+            // {
+            //     var vert = queue.Dequeue();
+            //     foreach (var edge in graph.OutEdges(vert.vertex))
+            //     {
+            //         if (vert.prev == edge.Weight)
+            //         {
+            //             queue.Enqueue((edge.To, vert.vertex));
+            //         }
+            //     }
+            //     if (!visited.Contains(vert.vertex))
+            //         visited.Add(vert.vertex);
+            //     
+            //     // Czy potrzebne?
+            //     if (visited.Count >= graph.VertexCount)
+            //         break;
+            // }
+            // visited.Sort();
+            //
+            // return visited.ToArray();
+
             List<int> visited = new List<int>();
-            Queue<(int vertex, int prev)> queue = new Queue<(int vertix, int prev)>();
+            Stack<(int vertex, int prev)> stack = new Stack<(int vertex, int prev)>();
             
-            queue.Enqueue((start, -1));
-            while (queue.Count != 0)
+            stack.Insert((start, -1));
+            while (stack.Count != 0)
             {
-                var vert = queue.Dequeue();
+                var vert = stack.Extract();
                 foreach (var edge in graph.OutEdges(vert.vertex))
                 {
                     if (vert.prev == edge.Weight)
-                    {
-                        queue.Enqueue((edge.To, vert.vertex));
-                    }
+                        stack.Insert((edge.To, vert.vertex));
                 }
                 if (!visited.Contains(vert.vertex))
                     visited.Add(vert.vertex);
             }
             visited.Sort();
+            
             return visited.ToArray();
         }
 
@@ -48,6 +72,8 @@ namespace ASD
         public (bool possible, int[] route) Lab04Stage2(DiGraph<int> graph, int[] starts, int[] goals)
         {
             // TODO
+            
+            
             return (false, null);
         }
     }
