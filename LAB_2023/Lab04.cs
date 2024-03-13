@@ -15,6 +15,9 @@ namespace ASD
         public int[] Lab04Stage1(DiGraph<int> graph, int start)
         {
             // TODO
+            // CO ZE ZLOZONOSCIA???
+            
+            // WERSJA Z BFS I Z LISTA (MOGLABY BYC Z HASHSET)
             // List<int> visited = new List<int>();
             // Queue<(int vertex, int prev)> queue = new Queue<(int vertix, int prev)>();
             //
@@ -25,22 +28,21 @@ namespace ASD
             //     foreach (var edge in graph.OutEdges(vert.vertex))
             //     {
             //         if (vert.prev == edge.Weight)
-            //         {
             //             queue.Enqueue((edge.To, vert.vertex));
-            //         }
             //     }
             //     if (!visited.Contains(vert.vertex))
             //         visited.Add(vert.vertex);
-            //     
-            //     // Czy potrzebne?
-            //     if (visited.Count >= graph.VertexCount)
+            //
+            //     // Czy potrzebne???
+            //     if (visited.Count == graph.VertexCount)
             //         break;
             // }
             // visited.Sort();
             //
             // return visited.ToArray();
 
-            List<int> visited = new List<int>();
+            // WERSJA Z DFS I HASHSET (MOGLOBY BYC Z LISTA)
+            HashSet<int> visited = new HashSet<int>();
             Stack<(int vertex, int prev)> stack = new Stack<(int vertex, int prev)>();
             
             stack.Insert((start, -1));
@@ -52,12 +54,16 @@ namespace ASD
                     if (vert.prev == edge.Weight)
                         stack.Insert((edge.To, vert.vertex));
                 }
-                if (!visited.Contains(vert.vertex))
-                    visited.Add(vert.vertex);
+                visited.Add(vert.vertex);
+
+                // Czy potrzebne???
+                if (visited.Count == graph.VertexCount)
+                    break;
             }
-            visited.Sort();
+            var res = visited.ToArray();
+            Array.Sort(res);
             
-            return visited.ToArray();
+            return res;
         }
 
         /// <summary>
