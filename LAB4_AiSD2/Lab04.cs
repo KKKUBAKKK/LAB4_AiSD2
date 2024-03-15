@@ -3,6 +3,7 @@ using System.Collections;
 using ASD.Graphs;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace ASD
 {
@@ -19,21 +20,33 @@ namespace ASD
         public int[] Lab04Stage1(DiGraph graph, int miastoStartowe, int K)
         {
             // TODO
-            HashSet<int> visited = new HashSet<int>();
-            Queue< (int city, int hour)> q = new Queue<(int city, int hour)>();
+            List<int> visited = new List<int>();
+            bool[] ifVisited = new bool[graph.VertexCount];
+            int[] hourVisited = new int[graph.VertexCount];
+            for (int i = 0; i < hourVisited.Length; i++)
+                hourVisited[i] = Int32.MaxValue;
             
+            Queue< (int city, int hour)> q = new Queue<(int city, int hour)>();
             q.Enqueue((miastoStartowe, 8));
             while (q.Count != 0)
             {
                 var vert = q.Dequeue();
                 
-                visited.Add(vert.city);
+                if (!ifVisited[vert.city])
+                {
+                    ifVisited[vert.city] = true;
+                    visited.Add(vert.city);
+                }
                 if (vert.hour == K)
                     continue;
                 
                 foreach (var neighbour in graph.OutNeighbors(vert.city))
                 {
-                    q.Enqueue((neighbour, vert.hour + 1));
+                    if (vert.hour + 1 < hourVisited[neighbour])
+                    {
+                        hourVisited[neighbour] = vert.hour + 1;
+                        q.Enqueue((neighbour, vert.hour + 1));
+                    }
                 }
             }
             var res = visited.ToArray();
@@ -53,31 +66,42 @@ namespace ASD
         public int[] Lab04Stage2(DiGraph<int> graph, int miastoStartowe, int K)
         {
             // TODO
-            HashSet<int> visited = new HashSet<int>();
+            List<int> visited = new List<int>();
+            bool[] ifVisited = new bool[graph.VertexCount];
             Queue< (int city, int hour)> q = new Queue<(int city, int hour)>();
             DiGraph<int> edgesGraph = new DiGraph<int>(graph.VertexCount, graph.Representation);
-            int[] res;
+            int[] hourVisited = new int[graph.VertexCount];
+            for (int i = 0; i < hourVisited.Length; i++)
+                hourVisited[i] = Int32.MaxValue;
             
             q.Enqueue((miastoStartowe, 8));
             while (q.Count != 0)
             {
                 var vert = q.Dequeue();
                 
-                visited.Add(vert.city);
+                if (!ifVisited[vert.city])
+                {
+                    ifVisited[vert.city] = true;
+                    visited.Add(vert.city);
+                }
                 if (vert.hour >= K)
                     continue;
                 
                 foreach (var edge in graph.OutEdges(vert.city))
                 {
                     if (edge.Weight >= vert.hour && edge.Weight < K)
-                        if (edgesGraph.AddEdge(edge.From, edge.To, edge.Weight))
-                            q.Enqueue((edge.To, edge.Weight + 1));
+                        if (edge.Weight < hourVisited[edge.To])
+                            if (edgesGraph.AddEdge(edge.From, edge.To, edge.Weight))
+                            {
+                                hourVisited[vert.city] = edge.Weight + 1;
+                                q.Enqueue((edge.To, edge.Weight + 1));
+                            }
                 }
             }
-            res = visited.ToArray();
-            Array.Sort(res);
+
+            visited.Sort();
             
-            return res;
+            return visited.ToArray();
         }
     }
 }
