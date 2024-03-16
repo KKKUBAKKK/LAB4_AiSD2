@@ -22,9 +22,6 @@ namespace ASD
             // TODO
             List<int> visited = new List<int>();
             bool[] ifVisited = new bool[graph.VertexCount];
-            int[] hourVisited = new int[graph.VertexCount];
-            for (int i = 0; i < hourVisited.Length; i++)
-                hourVisited[i] = Int32.MaxValue;
             
             Queue< (int city, int hour)> q = new Queue<(int city, int hour)>();
             q.Enqueue((miastoStartowe, 8));
@@ -42,11 +39,7 @@ namespace ASD
                 
                 foreach (var neighbour in graph.OutNeighbors(vert.city))
                 {
-                    if (vert.hour + 1 < hourVisited[neighbour])
-                    {
-                        hourVisited[neighbour] = vert.hour + 1;
-                        q.Enqueue((neighbour, vert.hour + 1));
-                    }
+                    q.Enqueue((neighbour, vert.hour + 1));
                 }
             }
             var res = visited.ToArray();
@@ -68,13 +61,14 @@ namespace ASD
             // TODO
             List<int> visited = new List<int>();
             bool[] ifVisited = new bool[graph.VertexCount];
-            Queue< (int city, int hour)> q = new Queue<(int city, int hour)>();
-            DiGraph<int> edgesGraph = new DiGraph<int>(graph.VertexCount, graph.Representation);
             int[] hourVisited = new int[graph.VertexCount];
             for (int i = 0; i < hourVisited.Length; i++)
                 hourVisited[i] = Int32.MaxValue;
             
+            Queue< (int city, int hour)> q = new Queue<(int city, int hour)>();
+            
             q.Enqueue((miastoStartowe, 8));
+            hourVisited[miastoStartowe] = 8;
             while (q.Count != 0)
             {
                 var vert = q.Dequeue();
@@ -84,18 +78,17 @@ namespace ASD
                     ifVisited[vert.city] = true;
                     visited.Add(vert.city);
                 }
-                if (vert.hour >= K)
+                if (vert.hour == K)
                     continue;
                 
                 foreach (var edge in graph.OutEdges(vert.city))
                 {
                     if (edge.Weight >= vert.hour && edge.Weight < K)
-                        if (edge.Weight < hourVisited[edge.To])
-                            if (edgesGraph.AddEdge(edge.From, edge.To, edge.Weight))
-                            {
-                                hourVisited[vert.city] = edge.Weight + 1;
-                                q.Enqueue((edge.To, edge.Weight + 1));
-                            }
+                        if (edge.Weight + 1 < hourVisited[edge.To])
+                        {
+                            hourVisited[edge.To] = edge.Weight + 1;
+                            q.Enqueue((edge.To, edge.Weight + 1));
+                        }
                 }
             }
 
