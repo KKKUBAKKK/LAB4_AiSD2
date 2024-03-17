@@ -4,6 +4,7 @@ using ASD.Graphs;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+// using System.Reflection.Metadata;
 
 namespace ASD
 {
@@ -59,11 +60,18 @@ namespace ASD
         public int[] Lab04Stage2(DiGraph<int> graph, int miastoStartowe, int K)
         {
             // TODO
+            int it = 0;
             List<int> visited = new List<int>();
             bool[] ifVisited = new bool[graph.VertexCount];
             int[] hourVisited = new int[graph.VertexCount];
             for (int i = 0; i < hourVisited.Length; i++)
                 hourVisited[i] = Int32.MaxValue;
+
+            DiGraph<int> copy = new DiGraph<int>(graph.VertexCount, graph.Representation);
+            foreach (var edge in graph.BFS().SearchAll())
+            {
+                copy.AddEdge(edge.From, edge.To, edge.Weight);
+            }
             
             Queue< (int city, int hour)> q = new Queue<(int city, int hour)>();
             
@@ -81,14 +89,26 @@ namespace ASD
                 if (vert.hour == K)
                     continue;
                 
-                foreach (var edge in graph.OutEdges(vert.city))
+                foreach (var edge in copy.OutEdges(vert.city))
                 {
-                    if (edge.Weight >= vert.hour && edge.Weight < K)
+                    if (edge.Weight >= K)
+                    {
+                        copy.RemoveEdge(edge.From, edge.To);
+                        continue;
+                    }
+                    
+                    if (edge.Weight >= vert.hour)
+                    {
                         if (edge.Weight + 1 < hourVisited[edge.To])
                         {
                             hourVisited[edge.To] = edge.Weight + 1;
                             q.Enqueue((edge.To, edge.Weight + 1));
                         }
+                        else
+                            copy.RemoveEdge(edge.From, edge.To);
+                    }
+
+                    it++;
                 }
             }
 
