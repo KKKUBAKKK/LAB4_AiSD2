@@ -91,13 +91,11 @@ namespace ASD
                 
                 foreach (var edge in graph.OutEdges(vert.city))
                 {
-                    if (edge.Weight >= vert.hour)
-                        if (edge.Weight < K)
-                            if (edge.Weight + 1 < hourVisited[edge.To])
-                            {
-                                hourVisited[edge.To] = edge.Weight + 1;
-                                q.Enqueue((edge.To, edge.Weight + 1));
-                            }
+                    if (edge.Weight >= vert.hour && edge.Weight < K && edge.Weight + 1 < hourVisited[edge.To])
+                    {
+                        hourVisited[edge.To] = edge.Weight + 1;
+                        q.Enqueue((edge.To, edge.Weight + 1));
+                    }
                 }
             }
 
